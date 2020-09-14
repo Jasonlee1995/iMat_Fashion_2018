@@ -1,16 +1,13 @@
-# +
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
 import torchvision.models as models
-# -
 
 import numpy as np
 from sklearn.metrics import f1_score
 
 
-# +
 def f1_score_(pred, target, threshold=0.3):
     pred = np.array(pred.cpu() > threshold, dtype=float)
     return f1_score(target.cpu(), pred, average='micro')
@@ -96,19 +93,18 @@ class Baseline():
                 
                 if (i+1) % self.print_freq == 0:
                     train_f1 = f1_score_(output, y)
-                    #test_f1, test_loss = self.test(test_data)
+                    test_f1, test_loss = self.test(test_data)
                     
                     self.train_losses.append(loss.item())
                     self.train_f1.append(train_f1)
-                    #self.test_losses.append(test_loss)
-                    #self.test_f1.append(test_acc)
+                    self.test_losses.append(test_loss)
+                    self.test_f1.append(test_acc)
                     
                     self.model.train()
                     
                     if epoch % self.epoch_print == 0:
-                        print('Iteration : {} - Train Loss : {:.2f}, Train F1 : {:.2f}'.format(i+1, loss.item(), train_f1))
-                        #print('Iteration : {} - Train Loss : {:.2f}, Test Loss : {:.2f}, '
-                        #      'Train F1 : {:.2f}, Test F1 : {:.2f}'.format(i+1, loss.item(), test_loss, train_f1, test_f1))
+                        print('Iteration : {} - Train Loss : {:.2f}, Test Loss : {:.2f}, '
+                              'Train F1 : {:.2f}, Test F1 : {:.2f}'.format(i+1, loss.item(), test_loss, train_f1, test_f1))
                     
             scheduler.step()
             if save and (epoch % self.epoch_save == 0):
